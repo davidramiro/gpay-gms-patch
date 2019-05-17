@@ -11,7 +11,7 @@ then
 else
 	echo "sqlite3 binary not found. downloading..."
 	cd /system/xbin/
-	curl -O https://github.com/davidramiro/gpay-gms-patch/raw/master/bin/sqlite3
+	curl -O https://raw.githubusercontent.com/davidramiro/gpay-gms-patch/master/bin/sqlite3
 	chmod 755 sqlite3
 fi
 
