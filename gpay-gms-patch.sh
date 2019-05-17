@@ -31,4 +31,8 @@ echo "editing database..."
 echo "setting file read only..."
 chmod 440 /data/data/com.google.android.gms/databases/dg.db
 
+# finish by remounting /system as RO
+echo "remounting /system as read-only..."
+mount -o remount,ro /system
+
 echo "all done! reboot and enjoy google pay."
