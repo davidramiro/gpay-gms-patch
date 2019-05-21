@@ -7,23 +7,16 @@ if [ $(id -u) = 0 ]
 then
   echo "We are root. Let's go!"
 else
-   echo "Script needs to be run as root. Did you use 'su'?"
-   exit 1
+  echo "Script needs to be run as root. Did you use 'su'?"
+  exit 1
 fi
 
-# mount /system with write permissions
-echo "Mounting /system with RW permissions..."
-mount -o remount,rw /system
-echo ""
-sleep 2
-
-
 # checking if sqlite3 is missing
-if [ ! -f "/system/xbin/sqlite3" ]
+if [ ! -f "/data/local/sqlite3" ]
 then
   echo "SQLite3 not found. Do you want to download it now? "
   # prompt user if download is wanted
-	select yn in "Yes" "No"; do
+  select yn in "Yes" "No"; do
     case $yn in
       Yes )
         echo "Getting device architecture..."
@@ -32,33 +25,33 @@ then
         echo ""
         sleep 1
         echo "Downloading SQLite3 binary for $abi..."
-        cd /system/xbin/
+        cd /data/local/
         # use device architecture in the download url
         curl -O https://raw.githubusercontent.com/davidramiro/gpay-gms-patch/master/bin/"$abi"/sqlite3
         sleep 2
         # check if download worked before continuing
-        if [ -f "/system/xbin/sqlite3" ]
+        if [ -f "/data/local/sqlite3" ]
         then
           echo "Applying permissions..."
           chmod 755 sqlite3
           sleep 1
-          echo "SQLite3 installed in /system/xbin."
+          echo "SQLite3 installed in /data/local."
           echo ""
           sleep 1
         else
           echo "Download failed. Internet/permission issue?"
-          echo "Reverting /system mount and exiting..."
-          mount -o remount,ro /system
+          echo "Exiting..."
+          sleep 1
           exit 1
         fi
         break
         ;;
       No )
         echo ""
-        echo "This script needs an SQLite3 binary to be present in /system/xbin."
+        echo "This script needs an SQLite3 binary to be present in /data/local."
         echo "Please download it manually and use chmod 755."
-        echo "Reverting /system mount and exiting..."
-        mount -o remount,ro /system
+        echo "Exiting..."
+        sleep 1
         exit 1
         ;;
     esac
@@ -83,7 +76,7 @@ sleep 2
 
 # set 0 on every row containing "attest" on dg.db from GMS
 echo "Editing database..."
-/system/xbin/sqlite3 /data/data/com.google.android.gms/databases/dg.db "update main set c='0' where a like '%attest%';"
+/data/local/sqlite3 /data/data/com.google.android.gms/databases/dg.db "update main set c='0' where a like '%attest%';"
 echo ""
 sleep 2
 
@@ -93,11 +86,6 @@ chmod 440 /data/data/com.google.android.gms/databases/dg.db
 echo ""
 sleep 2
 
-# finish by remounting /system as RO
-echo "Remounting /system as read-only..."
-mount -o remount,ro /system
-echo ""
-sleep 2
 
 echo "All done! Reboot, add your cards to Google Pay and have fun."
 echo "Big thanks to BostonDan@XDA!"

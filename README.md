@@ -1,7 +1,7 @@
 # gpay-gms-patch
 Google Pay can be pretty hard to get to work with Magisk, with this simple shell script you can get it to work flawlessly on the more recent versions of GPay, Google Play Services and Magisk.
 
-I have included SQLite3 binaries from the official Android NDK, the script can automatically download the correct version from this repo, but feel free to use your own and place it into `/system/xbin` with its permissions set to 755.
+I have included SQLite3 binaries from the official Android NDK, the script can automatically download the correct version from this repo, but feel free to use your own and place it into `/data/local` with its permissions set to 755.
 
 ## Tested on:
 - Working as of 21.05.2019:
