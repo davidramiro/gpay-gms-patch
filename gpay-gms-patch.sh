@@ -1,24 +1,65 @@
 #!/system/bin/sh
 
-echo ""
+# check magiskhide status
+check_magiskhide() {
+  if ! magiskhide status; then
+    echo "MagiskHide not found or disabled."
+    echo "Do you want to try enabling MagiskHide?"
+    select ysa in "Yes" "Skip MagiskHide" "Abort"; do
+      case $ysa in
+      "Yes")
+        echo ""
+        echo "Enabling MagiskHide..."
+        if magiskhide enable; then
+          echo "Successfully enabled. Moving on..."
+          sleep 1
+        else
+          echo "Could not enable MagiskHide."
+          sleep 1
+          exit 1
+        fi
+        hide_packages
+        break
+        ;;
+      "Skip MagiskHide")
+        echo ""
+        echo "Continuing without MagiskHide..."
+        sleep 1
+        break
+        ;;
+      "Abort")
+        echo ""
+        echo "Exiting..."
+        sleep 1
+        exit 0
+        ;;
+      esac
+    done
+  else
+    hide_packages
+  fi
+  echo ""
+  sleep 3
+}
 
-# check for root
-if [ $(id -u) = 0 ]
-then
-  echo "We are root. Let's go!"
-else
-  echo "Script needs to be run as root. Did you use 'su'?"
-  exit 1
-fi
+# enable magiskhide for relevant packages
+hide_packages() {
+  pkgs=(com.google.android.gms com.paypal.android.p2pmobile com.google.android.apps.walletnfcrel com.google.android.ext.services com.google.android.gsf)
+  for i in "${pkgs[@]}"; do
+    magiskhide add $i
+    echo "Hiding $i..."
+  done
+  echo ""
+  sleep 3
+}
 
-# checking if sqlite3 is missing
-if [ ! -f "/data/local/sqlite3" ]
-then
-  echo "SQLite3 not found. Do you want to download it now? "
-  # prompt user if download is wanted
-  select yn in "Yes" "No"; do
-    case $yn in
-      Yes )
+check_sqlite() {
+  if [ ! -f "/data/local/sqlite3" ]; then
+    echo "SQLite3 not found. Do you want to download it now? "
+    # prompt user if download is wanted
+    select yn in "Yes" "No"; do
+      case $yn in
+      Yes)
         echo "Getting device architecture..."
         abi=$(getprop ro.product.cpu.abi)
         echo "Device architecture is $abi."
@@ -30,8 +71,7 @@ then
         curl -O https://raw.githubusercontent.com/davidramiro/gpay-gms-patch/master/bin/"$abi"/sqlite3
         sleep 2
         # check if download worked before continuing
-        if [ -f "/data/local/sqlite3" ]
-        then
+        if [ -f "/data/local/sqlite3" ]; then
           echo "Applying permissions..."
           chmod 755 sqlite3
           sleep 1
@@ -46,7 +86,7 @@ then
         fi
         break
         ;;
-      No )
+      No)
         echo ""
         echo "This script needs an SQLite3 binary to be present in /data/local."
         echo "Please download it manually and use chmod 755."
@@ -54,17 +94,66 @@ then
         sleep 1
         exit 1
         ;;
-    esac
-  done
-else
-  echo "SQLite3 binary is present. Moving on."
+      esac
+    done
+  else
+    echo "SQLite3 binary is present. Moving on."
+    echo ""
+    sleep 1
+  fi
   echo ""
-  sleep 2
+  sleep 3
+}
+
+# main
+clear
+echo " ** gpay-gms-patch **"
+echo "    by davidramiro"
+echo ""
+echo ""
+
+# check for root
+if [ $(id -u) = 0 ]; then
+  echo "We are root. Let's go!"
+  echo ""
+  sleep 1
+else
+  echo "Script needs to be run as root. Did you use 'su'?"
+  exit 1
 fi
+
+# user menu
+echo "Hiding the packages mentioned on the GitHub repo is recommended."
+echo "This script can do this for you."
+echo "If you have already done so, you can go on patching the GMS database."
+echo ""
+sleep 1
+select psa in "Patch Database Only" "Set up MagiskHide and Patch" "Abort"; do
+  case $psa in
+  "Patch Database Only")
+    echo "Moving on..."
+    sleep 1
+    check_sqlite
+    break
+    ;;
+  "Set up MagiskHide and Patch")
+    echo ""
+    sleep 1
+    check_magiskhide
+    check_sqlite
+    break
+    ;;
+  "Abort")
+    echo "Exiting..."
+    sleep 1
+    exit 0
+    ;;
+  esac
+done
 
 # force close gpay
 echo "Stopping Google Pay..."
-am force-stop /data/data/com.google.android.apps.walletnfcrel
+am force-stop com.google.android.apps.walletnfcrel
 echo ""
 sleep 2
 
@@ -85,7 +174,6 @@ echo "Setting database as read-only..."
 chmod 440 /data/data/com.google.android.gms/databases/dg.db
 echo ""
 sleep 2
-
 
 echo "All done! Reboot, add your cards to Google Pay and have fun."
 echo "Big thanks to BostonDan@XDA!"
