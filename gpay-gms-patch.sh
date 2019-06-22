@@ -68,7 +68,23 @@ check_sqlite() {
         echo "Downloading SQLite3 binary for $abi..."
         cd /data/local/
         # use device architecture in the download url
-        curl -O https://raw.githubusercontent.com/davidramiro/gpay-gms-patch/master/bin/"$abi"/sqlite3
+        if [ -x "$(command -v curl)" ]; then
+          curl -O https://raw.githubusercontent.com/davidramiro/gpay-gms-patch/master/bin/"$abi"/sqlite3
+        else
+          if [ -x "$(command -v wget)" ]; then
+            wget https://raw.githubusercontent.com/davidramiro/gpay-gms-patch/master/bin/"$abi"/sqlite3
+          else
+            echo "Neither wget nor curl are available on your phone."
+            echo "To fix this, do one of the following steps:"
+            echo " - Download SQLite3 manually, place it into /data/local and chmod 755 it"
+            echo " - Install Busybox by osm0sis via Magisk"
+            echo " - Use Termux from Play Store (ships with wget)"
+            echo " - Install a wget or curl binary manually"
+            echo ""
+            echo "Exiting..."
+            exit 1
+          fi
+        fi
         sleep 2
         # check if download worked before continuing
         if [ -f "/data/local/sqlite3" ]; then
