@@ -14,22 +14,24 @@ com.paypal.android.p2pmobile
 This can be done automatically with the script as well.
 
 ## Status
-- Working as of 19.06.2019:
+- Working as of 23.06.2019:
   - Android 9, June Security Patch
   - Magisk 19.3
   - Google Play Services <=17.4.55
   - Tested on Xiaomi Mi9 and Pixel 3 XL
+  - Credit card (VISA) & PayPal tested
 
 ## Prerequisites
 - Magisk 19+
 - A terminal emulator
+- wget or curl (Most likely preinstalled. If script throws an error, [see below](#curl-wget-error)
 
 ## Usage
 * Obfuscate Magisk Manager package string in Magisk settings
 * Check if SafetyNet passes. If ctsProfile fails:
   * Spoof a legitimate device fingerprint (easy to do with [MagiskHide Props Config module](https://github.com/Magisk-Modules-Repo/MagiskHidePropsConf/blob/master/README.md#spoofing-devices-fingerprint-to-pass-the-ctsprofile-check))
-* Transfer `gpay-gms-patch.sh` to your device
-* Open your terminal emulator (or `adb shell`) and browse to the script's directory
+* [Download](https://cdn.jsdelivr.net/gh/davidramiro/gpay-gms-patch@master/gpay-gms-patch.sh) `gpay-gms-patch.sh`
+* Open your terminal emulator (e.g. Termux) or use `adb shell` and browse to the script's directory (e.g. `cd /sdcard/Download/`)
 * Make the script executable with `chmod +x gpay-gms-patch.sh`
 * Get SU permissions by entering `su` (confirm the Magisk prompt)
 * Execute the script by entering `sh gpay-gms-patch.sh`
@@ -39,6 +41,24 @@ This can be done automatically with the script as well.
 ## What exactly does this do?
 The method of this script is actually very simple, to spoof a legitimate Attestation state we just need to edit a few lines on a database included in the Google Play Service storage and lock it down afterwards, so the state cannot easily be changed again by Play Services. To read more about this topic, check the Android Developers documentation about SafetyNet Attestation API.  
 Nothing fancy, I just wanted to automate the process of installing SQLite, setting up MagiskHide and editing the database. Hope it can be of use for somebody.
+
+## curl / wget error?
+Some systems might not ship with either `wget` or `curl` binaries. No problem, either:
+- Install Termux ([Google Play](https://play.google.com/store/apps/details?id=com.termux) | [F-Droid](https://f-droid.org/packages/com.termux/)) and install its wget package:
+```
+pkg install wget
+hash -r
+```
+
+or:
+- Find out your device architecture (e.g. `arm64-v8a`)
+- Download the appropriate `sqlite3` binary from the `/bin/` directory of this repository
+- Move it to `/data/local` and set its permissions to `755`:
+```
+cd /sdcard/Download/
+mv sqlite3 /data/local/sqlite3
+chmod 755 /data/local/sqlite3
+```
 
 ## Note on Updating
 Of course this might get patched in the future. You can always roll back Google Play Services and redo the process. I will try to keep this repo updated if anything changes.

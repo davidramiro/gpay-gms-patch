@@ -66,13 +66,12 @@ check_sqlite() {
         echo ""
         sleep 1
         echo "Downloading SQLite3 binary for $abi..."
-        cd /data/local/
         # use device architecture in the download url
         if [ -x "$(command -v curl)" ]; then
-          curl -O https://raw.githubusercontent.com/davidramiro/gpay-gms-patch/master/bin/"$abi"/sqlite3
+          curl -o /data/local/sqlite3 https://raw.githubusercontent.com/davidramiro/gpay-gms-patch/master/bin/"$abi"/sqlite3
         else
           if [ -x "$(command -v wget)" ]; then
-            wget https://raw.githubusercontent.com/davidramiro/gpay-gms-patch/master/bin/"$abi"/sqlite3
+            wget -P /data/local/ https://raw.githubusercontent.com/davidramiro/gpay-gms-patch/master/bin/"$abi"/sqlite3
           else
             echo "Neither wget nor curl are available on your phone."
             echo "To fix this, do one of the following steps:"
@@ -89,7 +88,7 @@ check_sqlite() {
         # check if download worked before continuing
         if [ -f "/data/local/sqlite3" ]; then
           echo "Applying permissions..."
-          chmod 755 sqlite3
+          chmod 755 /data/local/sqlite3
           sleep 1
           echo "SQLite3 installed in /data/local."
           echo ""
