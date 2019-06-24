@@ -31,7 +31,7 @@ This can be done automatically with the script as well.
 * Check if SafetyNet passes. If ctsProfile fails:
   * Spoof a legitimate device fingerprint (easy to do with [MagiskHide Props Config module](https://github.com/Magisk-Modules-Repo/MagiskHidePropsConf/blob/master/README.md#spoofing-devices-fingerprint-to-pass-the-ctsprofile-check))
 * [Download](https://cdn.jsdelivr.net/gh/davidramiro/gpay-gms-patch@master/gpay-gms-patch.sh) `gpay-gms-patch.sh`
-* Open your terminal emulator (e.g. Termux) or use `adb shell` and browse to the script's directory (e.g. `cd /sdcard/Download/`)
+* Open your terminal emulator or use `adb shell` and browse to the script's directory (e.g. `cd /sdcard/Download/`)
 * Make the script executable with `chmod +x gpay-gms-patch.sh`
 * Get SU permissions by entering `su` (confirm the Magisk prompt)
 * Execute the script by entering `sh gpay-gms-patch.sh`
@@ -44,11 +44,8 @@ Nothing fancy, I just wanted to automate the process of installing SQLite, setti
 
 ## curl / wget error?
 Some systems might not ship with either `wget` or `curl` binaries. No problem, either:
-- Install Termux ([Google Play](https://play.google.com/store/apps/details?id=com.termux) | [F-Droid](https://f-droid.org/packages/com.termux/)) and install its wget package:
-```
-pkg install wget
-hash -r
-```
+- Install the `Busybox for Android NDK` module by osm0sis in Magisk Manager
+- Reboot and run the script again
 
 or:
 - Find out your device architecture (e.g. `arm64-v8a`)
