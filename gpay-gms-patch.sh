@@ -2,7 +2,7 @@
 
 # check magiskhide status
 check_magiskhide() {
-  if ! magiskhide status; then
+  if ! /sbin/magiskhide status; then
     echo "MagiskHide not found or disabled."
     echo "Do you want to try enabling MagiskHide?"
     select ysa in "Yes" "Skip MagiskHide" "Abort"; do
@@ -10,7 +10,7 @@ check_magiskhide() {
       "Yes")
         echo ""
         echo "Enabling MagiskHide..."
-        if magiskhide enable; then
+        if /sbin/magiskhide enable; then
           echo "Successfully enabled. Moving on..."
           sleep 1
         else
@@ -46,7 +46,7 @@ check_magiskhide() {
 hide_packages() {
   pkgs=(com.google.android.gms com.paypal.android.p2pmobile com.google.android.apps.walletnfcrel com.google.android.ext.services com.google.android.gsf)
   for i in "${pkgs[@]}"; do
-    magiskhide add $i
+    /sbin/magiskhide add $i
     echo "Hiding $i..."
   done
   echo ""

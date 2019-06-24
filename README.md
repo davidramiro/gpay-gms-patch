@@ -24,7 +24,7 @@ This can be done automatically with the script as well.
 ## Prerequisites
 - Magisk 19+
 - A terminal emulator
-- wget or curl (Most likely preinstalled. If script throws an error, [see below](#curl-wget-error)
+- wget or curl (Most likely preinstalled. If script throws an error, [see below](#curl-wget-error))
 
 ## Usage
 * Obfuscate Magisk Manager package string in Magisk settings
